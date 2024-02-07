@@ -3,7 +3,7 @@ import pygame
 
 
 def draw(screen):
-    screen.fill((0, 0, 0))
+
     font = pygame.font.Font(None, 50)
     text = font.render("Hello, Pygame!", True, (100, 255, 100))
     text_x = width // 2 - text.get_width() // 2
@@ -32,10 +32,12 @@ if __name__ == '__main__':
     size = width, height = 800, 600
     # screen — холст, на котором нужно рисовать:
     screen = pygame.display.set_mode(size)
+
     # формирование кадра:
     # команды рисования на холсте
-
+    screen.fill((0, 200, 100))
     draw(screen)
+    pygame.draw.line(screen, (0, 0, 255), (0, 0), (600, 500), width=5)
     draw_square(screen)
 
     # смена (отрисовка) кадра:
