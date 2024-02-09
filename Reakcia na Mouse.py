@@ -56,6 +56,7 @@ class Board:
                         self.board[y][x][1],
                         self.board[y][x][3],
                     )
+        return (-1, -1, '')
 
     def on_click(self, cell_coords):
         if cell_coords[2] == "black":
@@ -112,6 +113,8 @@ class Board:
                         and self.board[y][x][1] == cell_coords[1]
                     ):
                         self.board[y][x][3] = "black"
+        else:
+            pass
         pygame.display.flip()
 
 
