@@ -119,8 +119,6 @@ if __name__ == "__main__":
     # инициализация Pygame:
     board = Board(5, 7)
     board.set_view(100, 100, 50)
-    print(board.board)
-    # board = Board(5, 7)
     pygame.init()
     size = width, height = (board.left * 2 + board.width * board.cell_size), (
         board.top * 2 + board.height * board.cell_size
@@ -135,13 +133,9 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # x_y = event.pos  # координаты нажатия мышки
                 board.get_click(event.pos)
 
         pygame.display.flip()
-    # смена (отрисовка) кадра:
-
-    # ожидание закрытия окна:
     while pygame.event.wait().type != pygame.QUIT:
         pass
     # завершение работы:
