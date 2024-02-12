@@ -112,8 +112,8 @@ class Board:
 
 if __name__ == "__main__":
     # инициализация Pygame:
-    board = Board(5, 7)
-    board.set_view(100, 100, 50)
+    board = Board(3, 3)
+    board.set_view(100, 100, 100)
     pygame.init()
     size = width, height = (board.left * 2 + board.width * board.cell_size), (
         board.top * 2 + board.height * board.cell_size

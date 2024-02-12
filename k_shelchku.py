@@ -10,9 +10,7 @@ if __name__ == "__main__":
     x_y = (250, 250)
     fps = 80
     clock = pygame.time.Clock()
-    screen.fill((0, 0, 0))
-    pygame.draw.circle(screen, (255, 0, 0), (int(x_pos), int(y_pos)), 20)
-    pygame.display.flip()
+
     flag = False
     running = True
     while running:
@@ -24,29 +22,14 @@ if __name__ == "__main__":
                 x_y = event.pos  # координаты нажатия мышки
                 dx = x_y[0] - x_pos
                 dy = x_y[1] - y_pos
-                flag = True
-
-        if (abs(x_pos) != abs(x_y[0]) or abs(y_pos) != abs(x_y[1])) and flag:
-            screen.fill((0, 0, 0))
-            x_pos += -1 * (dx < 0) + (dx > 0)
-            y_pos += -1 * (dy < 0) + (dy > 0)
-            # print(x_pos, y_pos)
-            screen.fill((0, 0, 0))
-            pygame.draw.circle(screen, (255, 0, 0), (int(x_pos), int(y_pos)), 20)
-            clock.tick(fps)
-            pygame.display.flip()
-        flag = False
         if x_pos != x_y[0]:
             x_pos += -1 * (dx < 0) + (dx > 0)
-            screen.fill((0, 0, 0))
-            pygame.draw.circle(screen, (255, 0, 0), (int(x_pos), int(y_pos)), 20)
-            clock.tick(fps)
-            pygame.display.flip()
         if y_pos != x_y[1]:
             y_pos += -1 * (dy < 0) + (dy > 0)
-            screen.fill((0, 0, 0))
-            pygame.draw.circle(screen, (255, 0, 0), (int(x_pos), int(y_pos)), 20)
-            clock.tick(fps)
-            pygame.display.flip()
+
+        screen.fill((0, 0, 0))
+        pygame.draw.circle(screen, (255, 0, 0), (int(x_pos), int(y_pos)), 20)
+        clock.tick(fps)
+        pygame.display.flip()
 
     pygame.quit()
