@@ -11,7 +11,7 @@ class Board:
         self.left = 10
         self.top = 10
         self.cell_size = 30
-
+        self.color = ['black', 'red', 'blue']
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -31,15 +31,9 @@ class Board:
                     width=1,
                 )
                 # рисуем цветом
-                if self.board[i][j] == 1:
-                    color = "red"
-                elif self.board[i][j] == 2:
-                    color = "blue"
-                else:
-                    color = "black"
                 pygame.draw.rect(
                     self.screen,
-                    (color),
+                    (self.color[self.board[i][j]]),
                     (
                         cnt_j + 1,
                         cnt_i + 1,
