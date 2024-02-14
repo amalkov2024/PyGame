@@ -30,12 +30,23 @@ class Board:
                     (cnt_j, cnt_i, self.cell_size, self.cell_size),
                     width=1,
                 )
-                self.board[i][j] = [
-                    cnt_i,
-                    cnt_j,
-                    self.cell_size,
-                    "black",
-                ]  # координаты клеток
+                # рисуем цветом
+                if self.board[i][j] == 1:
+                    color = "red"
+                elif self.board[i][j] == 2:
+                    color = "blue"
+                else:
+                    color = "black"
+                pygame.draw.rect(
+                    self.screen,
+                    (color),
+                    (
+                        cnt_j + 1,
+                        cnt_i + 1,
+                        self.cell_size - 2,
+                        self.cell_size - 2,
+                    ),
+                )
                 cnt_j += self.cell_size
             cnt_i += self.cell_size
 
@@ -44,78 +55,28 @@ class Board:
         self.on_click(cell)
 
     def get_cell(self, mouse_pos):
-        for y in range(len(self.board)):
-            for x in range(len(self.board[y])):
-                if self.board[y][x][0] <= mouse_pos[1] <= (
-                    self.board[y][x][0] + self.board[y][x][2]
-                ) and self.board[y][x][1] <= mouse_pos[0] <= (
-                    self.board[y][x][1] + self.board[y][x][2]
-                ):
-                    return (
-                        self.board[y][x][0],
-                        self.board[y][x][1],
-                        self.board[y][x][3],
-                    )
-        return (-1, -1, '')
+        x = (
+            (mouse_pos[0] - self.left) // self.cell_size
+            + ((mouse_pos[0] - self.left) % self.cell_size != 0)
+            - 1
+        )
+        y = (
+            (mouse_pos[1] - self.top) // self.cell_size
+            + ((mouse_pos[1] - self.top) % self.cell_size != 0)
+            - 1
+        )
+        if 0 <= x < len(self.board[0]) and 0 <= y < len(self.board):
+            return (x, y)
+        return None
 
-    def on_click(self, cell_coords):
-        if cell_coords[2] == "black":
-            pygame.draw.rect(
-                self.screen,
-                ("red"),
-                (
-                    cell_coords[1] + 1,
-                    cell_coords[0] + 1,
-                    self.cell_size - 2,
-                    self.cell_size - 2,
-                ),
-            )
-            for y in range(len(self.board)):
-                for x in range(len(self.board[y])):
-                    if (
-                        self.board[y][x][0] == cell_coords[0]
-                        and self.board[y][x][1] == cell_coords[1]
-                    ):
-                        self.board[y][x][3] = "red"
-        elif cell_coords[2] == "red":
-            pygame.draw.rect(
-                self.screen,
-                ("blue"),
-                (
-                    cell_coords[1] + 1,
-                    cell_coords[0] + 1,
-                    self.cell_size - 2,
-                    self.cell_size - 2,
-                ),
-            )
-            for y in range(len(self.board)):
-                for x in range(len(self.board[y])):
-                    if (
-                        self.board[y][x][0] == cell_coords[0]
-                        and self.board[y][x][1] == cell_coords[1]
-                    ):
-                        self.board[y][x][3] = "blue"
-        elif cell_coords[2] == "blue":
-            pygame.draw.rect(
-                self.screen,
-                ("black"),
-                (
-                    cell_coords[1] + 1,
-                    cell_coords[0] + 1,
-                    self.cell_size - 2,
-                    self.cell_size - 2,
-                ),
-            )
-            for y in range(len(self.board)):
-                for x in range(len(self.board[y])):
-                    if (
-                        self.board[y][x][0] == cell_coords[0]
-                        and self.board[y][x][1] == cell_coords[1]
-                    ):
-                        self.board[y][x][3] = "black"
-        else:
-            pass
-        pygame.display.flip()
+    def on_click(self, cell_coords=None):
+        if cell_coords:
+            if self.board[cell_coords[1]][cell_coords[0]] == 0:
+                self.board[cell_coords[1]][cell_coords[0]] = 1
+            elif self.board[cell_coords[1]][cell_coords[0]] == 1:
+                self.board[cell_coords[1]][cell_coords[0]] = 2
+            else:
+                self.board[cell_coords[1]][cell_coords[0]] = 0
 
 
 if __name__ == "__main__":
@@ -129,7 +90,6 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode(size)
     running = True
     screen.fill((0, 0, 0))
-    board.render(screen)
     while running:
 
         for event in pygame.event.get():
@@ -137,7 +97,7 @@ if __name__ == "__main__":
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.get_click(event.pos)
-
+        board.render(screen)
         pygame.display.flip()
     while pygame.event.wait().type != pygame.QUIT:
         pass
