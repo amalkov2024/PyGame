@@ -11,7 +11,7 @@ class Board:
         self.left = 10
         self.top = 10
         self.cell_size = 30
-        self.color = {-1: 'blue', 0: 'black', 1:'red'}
+        self.color = {-1: 'blue', 0: 'black', 1:'red', -2:'blue'}
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -121,14 +121,72 @@ class Lines(Board):
             cell=self.get_cell(mouse_pos)
             if self.has_path(x1, y1, cell[1], cell[0]) == True:
                 # есть путь. Пометить нужные клетки в массиве
-                self.board[cell[1]][cell[0]] =-1
+                self.board[cell[1]][cell[0]] =-2
                 self.board[x1][y1]=0
                 print(x1,y1, cell)
 
 
+'''    def put(self, matrix, s, end):
+        """ функция принимает квадратную матрицу, координаты начала [x,y] и конца движения [x,y]
+            возвращает список координат движения
+            от начала до конца [[2, 4], [2, 5], [2, 6], [3, 6], [4, 6]]
+            если путь не найдет возвращает None
+        """
+        map_list = copy.deepcopy(matrix)
+        razmer = len(map_list)
+        stop = False
+        begin = [s]
+        start = begin[:]
+        map_list[int(start[0][0])][int(start[0][1])] = 0, 0
+        map_list[end[0]][end[1]] = "end"
+        while len(start):
+
+            if start[0][0] - 1 >= 0 and map_list[start[0][0] - 1][start[0][1]] == "N":
+                map_list[start[0][0] - 1][start[0][1]] = start[0]
+                start.append([start[0][0] - 1, start[0][1]])
+            elif start[0][0] - 1 >= 0 and map_list[start[0][0] - 1][start[0][1]] == "end":
+                map_list[start[0][0] - 1][start[0][1]] = start[0]
+                break
+
+            if start[0][1] + 1 < razmer and map_list[start[0][0]][start[0][1] + 1] == "N":
+                map_list[start[0][0]][start[0][1] + 1] = start[0]
+                start.append([start[0][0], start[0][1] + 1])
+            elif start[0][1] + 1 < razmer and map_list[start[0][0]][start[0][1] + 1] == "end":
+                map_list[start[0][0]][start[0][1] + 1] = start[0]
+                break
+
+            if start[0][0] + 1 < razmer and map_list[start[0][0] + 1][start[0][1]] == "N":
+                map_list[start[0][0] + 1][start[0][1]] = start[0]
+                start.append([start[0][0] + 1, start[0][1]])
+            elif start[0][0] + 1 < razmer and map_list[start[0][0] + 1][start[0][1]] == "end":
+                map_list[start[0][0] + 1][start[0][1]] = start[0]
+                break
+
+            if start[0][1] - 1 >= 0 and map_list[start[0][0]][start[0][1] - 1] == "N":
+                map_list[start[0][0]][start[0][1] - 1] = start[0]
+                start.append([start[0][0], start[0][1] - 1])
+            elif start[0][1] - 1 >= 0 and map_list[start[0][0]][start[0][1] - 1] == "end":
+                map_list[start[0][0]][start[0][1] - 1] = start[0]
+                break
+            start.pop(0)
+        else:
+            stop = True
+        if stop == False:
+            put = [end]
+            while 1:
+                coor = map_list[put[0][0]][put[0][1]]
+                if coor == (0, 0):
+                    break
+                put.insert(0, coor)
+            return put
+        else:
+            return None
+'''
+
+
 if __name__ == "__main__":
     # инициализация Pygame:
-    board = Lines(5, 5)
+    board = Lines(7, 7)
     board.set_view(50, 50, 50)
     pygame.init()
     size = width, height = (board.left * 2 + board.width * board.cell_size), (
