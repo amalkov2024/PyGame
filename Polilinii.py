@@ -31,20 +31,20 @@ class Board:
                     width=1,
                 )
                 # рисуем цветом
-                if self.board[i][j]<=2:
-                    if self.board[i][j] not in self.color:
-                        col=0
-                    else:
-                        col=self.color[self.board[i][j]]
-                    pygame.draw.circle(
-                        self.screen,
-                        (col),
-                        (
-                            cnt_j + 1+ self.cell_size//2,
-                            cnt_i + 1+ self.cell_size//2
+                #if self.board[i][j]<=2:
+                if self.board[i][j] not in self.color:
+                    col=0
+                else:
+                    col=self.color[self.board[i][j]]
+                pygame.draw.circle(
+                    self.screen,
+                    (col),
+                    (
+                        cnt_j + 1+ self.cell_size//2,
+                        cnt_i + 1+ self.cell_size//2
 
-                        ),self.cell_size//2-4,
-                    )
+                    ),self.cell_size//2-4,
+                )
                 cnt_j += self.cell_size
             cnt_i += self.cell_size
 
@@ -74,10 +74,31 @@ class Board:
             elif self.board[cell_coords[1]][cell_coords[0]] == -1:
                 self.board[cell_coords[1]][cell_coords[0]] = 1
             else:
-                self.board[cell_coords[1]][cell_coords[0]] = 0
+                self.board[cell_coords[1]][cell_coords[0]] = 0 # если другой цвет то пометим синим
 
 
 class Lines(Board):
+    def __init__(self,width, height):
+        super().__init__(width,height)
+        self.roads=None
+
+    def road(self, mass, stx, sty, endx, endy): # возвращает список координат пути
+        ans = [(endx, endy)]
+        while (stx != endx or sty != endy):
+            min_mass = [mass[endx - (0 < endx <= len(mass))][endy], mass[endx + (0 <= endx < len(mass) - 1)][endy],
+                                     mass[endx][endy - (0 < endy <= len(mass[0]))], mass[endx][endy + (0 <= endy < len(mass[0]) - 1)]]
+            min_r=min(min_mass, key=lambda x: 10000 if x <= -1 else x)
+
+            if min_r == mass[endx - (0 < endx < len(mass))][endy]:
+                endx, endy = endx - (0 < endx < len(mass)), endy
+            elif min_r == mass[endx + (0 <= endx < len(mass) - 1)][endy]:
+                endx, endy = endx + (0 <= endx < len(mass) - 1), endy
+            elif min_r == mass[endx][endy - (0 < endy <= len(mass[0]))]:
+                endx, endy = endx, endy - (0 < endy <= len(mass[0]))
+            elif min_r == mass[endx][endy + (0 <= endy < len(mass[0]) - 1)]:
+                endx, endy = endx, endy + (0 <= endy < len(mass[0]) - 1)
+            ans.append((endx, endy))
+        return ans
 
     def voln(self, x, y, cur, n, m, lab):
         lab[x][y] = cur
@@ -108,6 +129,7 @@ class Lines(Board):
     def red_blue(self,mouse_pos):
         y2,x2=mouse_pos[0],mouse_pos[1]
         cnt_red = 0
+
         for i in self.board:
             cnt_red += i.count(1)
         if cnt_red == 0:
@@ -119,69 +141,21 @@ class Lines(Board):
                         x1=i
                         y1=j
             cell=self.get_cell(mouse_pos)
+
             if self.has_path(x1, y1, cell[1], cell[0]) == True:
                 # есть путь. Пометить нужные клетки в массиве
-                self.board[cell[1]][cell[0]] =-2
-                self.board[x1][y1]=0
-                print(x1,y1, cell)
+                self.board[cell[1]][cell[0]] =-2 # финишная клетка
+                self.board[x1][y1]=0 # стартовая
+                self.roads = self.road(self.board,x1,y1,cell[1],cell[0])
+                # обнуляем массив с найденным путем
+                for x in range(len(self.board)):
+                    for y in range((len(self.board[x]))):
+                        if self.board[x][y]>0:
+                            self.board[x][y]=0
+                print('red x1, y1',x1,y1, cell)
+                print('red self.roads',self.roads)
 
 
-'''    def put(self, matrix, s, end):
-        """ функция принимает квадратную матрицу, координаты начала [x,y] и конца движения [x,y]
-            возвращает список координат движения
-            от начала до конца [[2, 4], [2, 5], [2, 6], [3, 6], [4, 6]]
-            если путь не найдет возвращает None
-        """
-        map_list = copy.deepcopy(matrix)
-        razmer = len(map_list)
-        stop = False
-        begin = [s]
-        start = begin[:]
-        map_list[int(start[0][0])][int(start[0][1])] = 0, 0
-        map_list[end[0]][end[1]] = "end"
-        while len(start):
-
-            if start[0][0] - 1 >= 0 and map_list[start[0][0] - 1][start[0][1]] == "N":
-                map_list[start[0][0] - 1][start[0][1]] = start[0]
-                start.append([start[0][0] - 1, start[0][1]])
-            elif start[0][0] - 1 >= 0 and map_list[start[0][0] - 1][start[0][1]] == "end":
-                map_list[start[0][0] - 1][start[0][1]] = start[0]
-                break
-
-            if start[0][1] + 1 < razmer and map_list[start[0][0]][start[0][1] + 1] == "N":
-                map_list[start[0][0]][start[0][1] + 1] = start[0]
-                start.append([start[0][0], start[0][1] + 1])
-            elif start[0][1] + 1 < razmer and map_list[start[0][0]][start[0][1] + 1] == "end":
-                map_list[start[0][0]][start[0][1] + 1] = start[0]
-                break
-
-            if start[0][0] + 1 < razmer and map_list[start[0][0] + 1][start[0][1]] == "N":
-                map_list[start[0][0] + 1][start[0][1]] = start[0]
-                start.append([start[0][0] + 1, start[0][1]])
-            elif start[0][0] + 1 < razmer and map_list[start[0][0] + 1][start[0][1]] == "end":
-                map_list[start[0][0] + 1][start[0][1]] = start[0]
-                break
-
-            if start[0][1] - 1 >= 0 and map_list[start[0][0]][start[0][1] - 1] == "N":
-                map_list[start[0][0]][start[0][1] - 1] = start[0]
-                start.append([start[0][0], start[0][1] - 1])
-            elif start[0][1] - 1 >= 0 and map_list[start[0][0]][start[0][1] - 1] == "end":
-                map_list[start[0][0]][start[0][1] - 1] = start[0]
-                break
-            start.pop(0)
-        else:
-            stop = True
-        if stop == False:
-            put = [end]
-            while 1:
-                coor = map_list[put[0][0]][put[0][1]]
-                if coor == (0, 0):
-                    break
-                put.insert(0, coor)
-            return put
-        else:
-            return None
-'''
 
 
 if __name__ == "__main__":
@@ -204,6 +178,12 @@ if __name__ == "__main__":
                 board.red_blue(event.pos)
                 #board.get_click(event.pos)
                 print(board.board)
+        if board.roads:
+            # нужно мигнуть по пути следования тоесть изменять массив board.board
+            print('YES')
+            board.roads=None
+
+
         board.render(screen)
         pygame.display.flip()
     while pygame.event.wait().type != pygame.QUIT:
