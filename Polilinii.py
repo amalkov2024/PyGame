@@ -98,7 +98,7 @@ class Lines(Board):
             elif min_r == mass[endx][endy + (0 <= endy < len(mass[0]) - 1)]:
                 endx, endy = endx, endy + (0 <= endy < len(mass[0]) - 1)
             ans.append((endx, endy))
-        return ans
+        return ans[::-1]
 
     def voln(self, x, y, cur, n, m, lab):
         lab[x][y] = cur
@@ -144,18 +144,16 @@ class Lines(Board):
 
             if self.has_path(x1, y1, cell[1], cell[0]) == True:
                 # есть путь. Пометить нужные клетки в массиве
-                self.board[cell[1]][cell[0]] =-2 # финишная клетка
-                self.board[x1][y1]=0 # стартовая
+                #self.board[cell[1]][cell[0]] =-2 # финишная клетка
+                #self.board[x1][y1]=0 # стартовая
                 self.roads = self.road(self.board,x1,y1,cell[1],cell[0])
                 # обнуляем массив с найденным путем
                 for x in range(len(self.board)):
                     for y in range((len(self.board[x]))):
                         if self.board[x][y]>0:
                             self.board[x][y]=0
-                print('red x1, y1',x1,y1, cell)
-                print('red self.roads',self.roads)
-
-
+                #print('red x1, y1',x1,y1, cell)
+                #print('red self.roads',self.roads)
 
 
 if __name__ == "__main__":
@@ -167,6 +165,8 @@ if __name__ == "__main__":
         board.top * 2 + board.height * board.cell_size
     )
     screen = pygame.display.set_mode(size)
+    fps = 5
+    clock = pygame.time.Clock()
     running = True
     screen.fill((0, 0, 0))
     while running:
@@ -177,14 +177,20 @@ if __name__ == "__main__":
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.red_blue(event.pos)
                 #board.get_click(event.pos)
-                print(board.board)
+                #print('board.board',board.board)
+                cnt_roads = 1
         if board.roads:
             # нужно мигнуть по пути следования тоесть изменять массив board.board
-            print('YES')
-            board.roads=None
-
-
+            #print('YES')
+            #print(board.roads)
+            prev_roads=cnt_roads-1
+            board.board[board.roads[prev_roads][0]][board.roads[prev_roads][1]] = 0
+            board.board[board.roads[cnt_roads][0]][board.roads[cnt_roads][1]] = -1
+            cnt_roads+=1
+            if cnt_roads==len(board.roads):
+                board.roads=None
         board.render(screen)
+        clock.tick(fps)
         pygame.display.flip()
     while pygame.event.wait().type != pygame.QUIT:
         pass
