@@ -88,7 +88,6 @@ class Lines(Board):
             min_mass = [mass[endx - (0 < endx <= len(mass))][endy], mass[endx + (0 <= endx < len(mass) - 1)][endy],
                                      mass[endx][endy - (0 < endy <= len(mass[0]))], mass[endx][endy + (0 <= endy < len(mass[0]) - 1)]]
             min_r=min(min_mass, key=lambda x: 10000 if x <= -1 else x)
-
             if min_r == mass[endx - (0 < endx < len(mass))][endy]:
                 endx, endy = endx - (0 < endx < len(mass)), endy
             elif min_r == mass[endx + (0 <= endx < len(mass) - 1)][endy]:
@@ -117,6 +116,8 @@ class Lines(Board):
         return lab
 
     def has_path(self, x1, y1, x2, y2):
+        if x1==x2 and y2==y1:
+            return False
         lab = self.board
         n = len(lab)
         m = len(lab[0])
