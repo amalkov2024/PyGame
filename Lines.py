@@ -222,7 +222,7 @@ class Lines(Board):
 
 if __name__ == "__main__":
     # инициализация Pygame:
-    board = Lines(10, 10)
+    board = Lines(5, 5)
     board.set_view(50, 50, 50)
     pygame.init()
     size = width, height = (board.left * 2 + board.width * board.cell_size), (
@@ -239,7 +239,7 @@ if __name__ == "__main__":
                 running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 board.red_blue(event.pos)
-
+                print(board.board)
         pygame.display.flip()
     while pygame.event.wait().type != pygame.QUIT:
         pass
