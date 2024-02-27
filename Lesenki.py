@@ -43,6 +43,7 @@ class Rect(pygame.sprite.Sprite):
         if pygame.sprite.spritecollideany(self, horizontal_borders):
             self.rect = self.rect.move(0, m)
 
+
 class Block_vert(pygame.sprite.Sprite):
     # строго вертикальный или строго горизонтальный отрезок
     def __init__(self, x1, y1):
