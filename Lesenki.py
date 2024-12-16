@@ -14,6 +14,16 @@ class Block(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, 50, 10)
 
 
+class Block_vert(pygame.sprite.Sprite):
+    # строго вертикальный или строго горизонтальный отрезок
+    def __init__(self, x1, y1):
+        super().__init__(all_sprites)
+        self.add(horizontal_borders)
+        self.image = pygame.Surface([10, 50])
+        self.image.fill((255, 0, 0))
+        self.rect = pygame.Rect(x1, y1, 10, 50)
+
+
 class Rect(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__(all_sprites)
@@ -30,7 +40,8 @@ class Rect(pygame.sprite.Sprite):
         self.vy = 1
 
     def update(self):
-        if not pygame.sprite.spritecollideany(self, vertical_borders):
+        if not pygame.sprite.spritecollideany(self, vertical_borders) and not pygame.sprite.spritecollideany(self,
+                                                                                                             horizontal_borders):
             self.rect = self.rect.move(0, 1)
 
     def remove_rect(self, x, y):
@@ -44,23 +55,12 @@ class Rect(pygame.sprite.Sprite):
             self.rect = self.rect.move(0, m)
 
 
-class Block_vert(pygame.sprite.Sprite):
-    # строго вертикальный или строго горизонтальный отрезок
-    def __init__(self, x1, y1):
-        super().__init__(all_sprites)
-        self.add(horizontal_borders)
-        self.image = pygame.Surface([10, 50])
-        self.image.fill((255, 0, 0))
-        self.rect = pygame.Rect(x1, y1, 10, 50)
-
-
 fps = 20
 clock = pygame.time.Clock()
 pygame.init()
 size = width, height = 500, 500
 screen = pygame.display.set_mode(size)
 all_sprites = pygame.sprite.Group()
-
 
 if __name__ == "__main__":
     vertical_borders = pygame.sprite.Group()
