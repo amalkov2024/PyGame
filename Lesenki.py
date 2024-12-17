@@ -48,7 +48,8 @@ class Rect(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, 20, 20)
 
     def move_horizont(self, m):
-        self.rect = self.rect.move(m, 0)
+        if not pygame.sprite.spritecollideany(self, horizontal_borders):
+            self.rect = self.rect.move(m, 0)
 
     def move_vertical(self, m):
         if pygame.sprite.spritecollideany(self, horizontal_borders):
