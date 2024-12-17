@@ -91,11 +91,6 @@ if __name__ == "__main__":
                     kub.move_horizont(10)
                 if event.key == pygame.K_LEFT:
                     kub.move_horizont(-10)
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RIGHT:
-                    kub.move_horizont(10)
-                if event.key == pygame.K_LEFT:
-                    kub.move_horizont(-10)
                 if event.key == pygame.K_DOWN:
                     kub.move_vertical(10)
                 if event.key == pygame.K_UP:
@@ -104,7 +99,6 @@ if __name__ == "__main__":
         all_sprites.update()
         clock.tick(fps)
         pygame.display.flip()
-    while pygame.event.wait().type != pygame.QUIT:
-        pass
+
     # завершение работы:
     pygame.quit()

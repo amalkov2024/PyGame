@@ -66,7 +66,7 @@ def load_image(name, color_key=None):
     return image
 
 
-def terminate():
+def terminate():  # завершение игры
     pygame.quit()
     sys.exit()
 
@@ -134,6 +134,7 @@ def generate_level(level):
     return new_player, x, y
 
 
+# Запуск игры
 tile_images = {"wall": load_image("box.png"), "empty": load_image("grass.png")}
 player_image = load_image("mario.png", -1)
 
@@ -141,6 +142,7 @@ tile_width = tile_height = 50
 
 start_screen()
 player, level_x, level_y = generate_level(load_level(level))
+
 running = True
 
 while running:

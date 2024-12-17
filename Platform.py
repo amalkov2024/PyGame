@@ -77,7 +77,7 @@ if __name__ == "__main__":
         all_sprites.update()
         clock.tick(fps)
         pygame.display.flip()
-    while pygame.event.wait().type != pygame.QUIT:
-        pass
+   # while pygame.event.wait().type != pygame.QUIT:
+    #    pass
     # завершение работы:
     pygame.quit()
