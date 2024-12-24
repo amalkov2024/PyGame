@@ -19,6 +19,56 @@ class Player(pygame.sprite.Sprite):
         )
 
 
+# работа с камерой начало
+class Camera:
+    # зададим начальный сдвиг камеры
+    def __init__(self):
+        self.dx = 0
+        self.dy = 0
+
+    # сдвинуть объект obj на смещение камеры
+    def apply(self, obj):
+        obj.rect.x += self.dx
+        obj.rect.y += self.dy
+
+    # позиционировать камеру на объекте target
+    def update(self, target):
+        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
+        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
+
+# работа с камерой окончание
+
+
+# Отображение имен файлов с уровнями игры для предварительного просмотра и выбора нужного
+list_file = [
+    file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
+]
+if list_file:
+    print(
+        "Имена файлов с доступными для загрузки уровнями:"
+    )  # для отображения файлы с уровнями игры должны именоваться level*.txt
+    for f in list_file:
+        print(f)
+
+level = input("Введите название файла в котором расположена карта уровня: ")
+pygame.init()
+pygame.key.set_repeat(200, 70)
+FPS = 50
+width = 550
+height = 550
+step = 50
+
+screen = pygame.display.set_mode((width, height))
+clock = pygame.time.Clock()
+# основной персонаж
+player = None
+
+# группы спрайтов
+all_sprites = pygame.sprite.Group()
+tiles_group = pygame.sprite.Group()
+player_group = pygame.sprite.Group()
+
+
 def load_image(name, color_key=None):
     fullname = os.path.join("data", name)
     try:
@@ -80,6 +130,7 @@ def load_level(filename):
             level_map = [line.strip() for line in mapFile]
             # и подсчитываем максимальную длину
         max_width = max(map(len, level_map))
+
         # дополняем каждую строку пустыми клетками ('.')
         return list(map(lambda x: x.ljust(max_width, "."), level_map))
     except FileNotFoundError:
@@ -103,65 +154,20 @@ def generate_level(level):
     return new_player, x, y
 
 
-class Camera:
-    def __init__(self):
-        self.dx = 0
-        self.dy = 0
-
-    def apply(self, obj):
-        obj.rect.x += self.dx
-        obj.rect.y += self.dy
-
-    def update(self, target):
-        self.dx = -(target.rect.x + target.rect.w // 2 - width // 2)
-        self.dy = -(target.rect.y + target.rect.h // 2 - height // 2)
-
-
-
-# Отображение имен файлов с уровнями игры для предварительного просмотра и выбора нужного
-list_file = [
-    file for file in os.listdir("data") if file[-4:] == ".txt" and file[:5] == "level"
-]
-if list_file:
-    print(
-        "Имена файлов с доступными для загрузки уровнями:"
-    )  # для отображения файлы с уровнями игры должны именоваться level*.txt
-    for f in list_file:
-        print(f)
-
-level = input("Введите название файла в котором расположена карта уровня: ")
-pygame.init()
-pygame.key.set_repeat(200, 70)
-FPS = 50
-width = 550
-height = 550
-step = tile_width = tile_height = 50
-
-screen = pygame.display.set_mode((width, height))
-clock = pygame.time.Clock()
-# основной персонаж
-player = None
-
-# группы спрайтов
-all_sprites = pygame.sprite.Group()
-tiles_group = pygame.sprite.Group()
-player_group = pygame.sprite.Group()
-
 # Запуск игры
 tile_images = {"wall": load_image("box.png"), "empty": load_image("grass.png")}
 player_image = load_image("mario.png", -1)
 
-camera = Camera()
+tile_width = tile_height = 50
 
+start_screen()
+# Создаем камеру
+camera = Camera()
 # положение игрока и размер карты
 player, level_x, level_y = generate_level(load_level(level))
-# Inna
-dx = -(player.rect.x + player.rect.w // 2 - width // 2)
-dy = -(player.rect.y + player.rect.h // 2 - height // 2)
-# end Inna
-start_screen()
-
+# print(level_x, level_y)
 running = True
+
 while running:
 
     for event in pygame.event.get():
@@ -169,45 +175,24 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                if player.rect.x - dx < step or \
-                        load_level(level)[(player.rect.y - dy) // step] \
-                                [(player.rect.x - dx) // step - 1] == '#':
-                    continue
                 player.rect.x -= step
-                dx += step
-                # player.rect.x -= step
             if event.key == pygame.K_RIGHT:
-                if (player.rect.x - dx) // step == level_x or \
-                        load_level(level)[(player.rect.y - dy) // step] \
-                                [(player.rect.x - dx) // step + 1] == '#':
-                    continue
                 player.rect.x += step
-                dx -= step
-                # player.rect.x += step
             if event.key == pygame.K_UP:
-                if player.rect.y - dy < step or load_level(level)[(player.rect.y - dy) // step - 1] \
-                        [(player.rect.x - dx) // step] == '#':
-                    continue
                 player.rect.y -= step
-                dy += step
-                # player.rect.y -= step
             if event.key == pygame.K_DOWN:
-                if (player.rect.y - dy) // step == level_y or \
-                        load_level(level)[(player.rect.y - dy) // step + 1] \
-                                [(player.rect.x - dx) // step] == '#':
-                    continue
                 player.rect.y += step
-                dy -= step
-                # player.rect.y += step
-
+    # изменяем ракурс камеры
     camera.update(player)
+    # обновляем положение всех спрайтов
     for sprite in all_sprites:
         camera.apply(sprite)
-
     screen.fill(pygame.Color(0, 0, 0))
     tiles_group.draw(screen)
     player_group.draw(screen)
+
     pygame.display.flip()
+
     clock.tick(FPS)
 
 terminate()
